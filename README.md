@@ -1,5 +1,3 @@
-# Chrobit
- A binary clock in the terminal
 <h1 align="center">Chrobit</h1>
 <h3 align="center">Binary clock in the terminal</h3>
 <p align="center">
