@@ -21,7 +21,10 @@ class Pixel():
     def moder(self,mode):
         self.mode = mode
         self.make_bit()
-def setup(stdscr):
+
+def setup_clock(stdscr):
+    stdscr.clear()
+    stdscr.refresh()
     global row1
     global row2
     row1 = []
@@ -34,43 +37,102 @@ def setup(stdscr):
         bit = Pixel(5,10,10,i,2)
         bit.make_bit()
         row2.append(bit)
+    clock_loop(stdscr)
 
-def main(stdscr):
-    curses.start_color()
-    curses.init_pair(1,curses.COLOR_YELLOW, curses.COLOR_WHITE)
-    curses.init_pair(2,curses.COLOR_YELLOW, curses.COLOR_MAGENTA)
+def clock_loop(stdscr):
+    try:           
 
+        while True:
+            
+
+                
+            binhour = list(format(datetime.now().hour % 12,'04b'))
+            binminute = list(format(datetime.now().minute,'06b'))
+
+            for i,bit in enumerate(binhour):
+                if int(bit) == 1:
+                    row1[i].moder(2)
+                else:
+                    row1[i].moder(1)
+            
+            for i,bit in enumerate(binminute):
+                if int(bit) == 1:
+                    row2[i].moder(2)
+                else:
+                    row2[i].moder(1)
+
+            time.sleep(1)
+            try:
+                key = stdscr.getkey()
+            except curses.error:
+                key = None
+
+            if key != None:
+                if key == "s":
+                    break
+
+    except KeyboardInterrupt:
+        cleanup_windows()
+    except Exception as e:
+        cleanup_windows()
+        raise e
+
+def setup_settings(stdscr):
+    cleanup_windows()
     stdscr.clear()
     stdscr.refresh()
+    settings_loop(stdscr)
 
-    setup(stdscr)
+def settings_loop(stdscr):
+    stdscr.box()
+    stdscr.addstr(10,10, "Settings")
+    while True:
+        try:
+            key = stdscr.getkey()
+        except curses.error:
+            key = None
+        except KeyboardInterrupt:
+            cleanup_windows()
+        except Exception as e:
+            cleanup_windows()
+            raise e
+
+        if key != None:
+            if key == "c":
+                break
+
+def cleanup_windows():
+    global row1, row2
+    if 'row1' in globals():
+        for bit in row1:
+            if hasattr(bit,'win'):
+                bit.win.clear()
+                bit.win.refresh()
+                del bit.win
+        row1.clear()
+    if 'row2' in globals():
+        for bit in row2:
+            if hasattr(bit, 'win'):
+                bit.win.clear()
+                bit.win.refresh()
+                del bit.win
+        row2.clear()
+
+
+    
+def main(stdscr):
+    curses.start_color()
+    curses.curs_set(0)
+    curses.init_pair(1,curses.COLOR_YELLOW, curses.COLOR_WHITE)
+    curses.init_pair(2,curses.COLOR_YELLOW, curses.COLOR_MAGENTA)
+    stdscr.nodelay(True)
+    stdscr.clear()
+    stdscr.refresh()
+    while True:
+        setup_clock(stdscr)
+        setup_settings(stdscr)
 
  
-            
-
-    while True:
-        
-
-            
-        binhour = list(format(datetime.now().hour % 12,'04b'))
-        binminute = list(format(datetime.now().minute,'06b'))
-
-        for i,bit in enumerate(binhour):
-            if int(bit) == 1:
-                row1[i].moder(2)
-            else:
-                row1[i].moder(1)
-        
-        for i,bit in enumerate(binminute):
-            if int(bit) == 1:
-                row2[i].moder(2)
-            else:
-                row2[i].moder(1)
-
-        time.sleep(10)
-
-        
-        
     
-    
+            
 wrapper(main)
