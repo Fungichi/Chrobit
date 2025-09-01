@@ -3,6 +3,25 @@ from curses import wrapper
 from datetime import datetime
 import time 
 
+global oncolor, offcolor, bgcolor, hourmode,color_map,selected
+
+color_map = {
+        "BLACK": curses.COLOR_BLACK,
+        "RED": curses.COLOR_RED,
+        "GREEN": curses.COLOR_GREEN,
+        "YELLOW": curses.COLOR_YELLOW,
+        "BLUE": curses.COLOR_BLUE,
+        "MAGENTA": curses.COLOR_MAGENTA,
+        "CYAN": curses.COLOR_CYAN,
+        "WHITE": curses.COLOR_WHITE
+    }
+x,y,z = 5,7,7
+keys = list(color_map.keys())
+oncolor = keys[x]
+offcolor = keys[y]
+bgcolor = keys[z]
+hourmode = 12
+selected = 0
 
 class Pixel():
     def __init__(self,y,x,s,q,mode):
@@ -82,10 +101,32 @@ def setup_settings(stdscr):
     stdscr.clear()
     stdscr.refresh()
     settings_loop(stdscr)
-
+def update_settings(stdscr):
+    curses.init_pair(1,curses.COLOR_BLACK, color_map[offcolor])
+    curses.init_pair(2,curses.COLOR_BLACK, color_map[oncolor])
+    curses.init_pair(3,curses.COLOR_BLACK, color_map[bgcolor])
+    stdscr.addstr(3,3,f'                   ',curses.color_pair(2) | curses.A_REVERSE)
+    stdscr.addstr(5,3,f'                   ',curses.color_pair(1) | curses.A_REVERSE)
+    stdscr.addstr(7,3,f'                   ')
+    stdscr.addstr(9,3,f'                   ')
+    stdscr.addstr(3,3,f'ON COLOR: {oncolor}',curses.color_pair(2) | curses.A_REVERSE)
+    stdscr.addstr(5,3,f'OFF COLOR: {offcolor}',curses.color_pair(1) | curses.A_REVERSE)
+    stdscr.addstr(7,3,f'BG COLOR: {bgcolor}',curses.color_pair(3) | curses.A_REVERSE)
+    stdscr.addstr(9,3,f'HOUR MODE: {hourmode}')
+    if selected == 0:
+        stdscr.addstr(3,3,f'ON COLOR: {oncolor}',curses.color_pair(2))
+    elif selected == 1:
+        stdscr.addstr(5,3,f'OFF COLOR: {offcolor}',curses.color_pair(1))
+    elif selected == 2:
+        stdscr.addstr(7,3,f'BG COLOR: {bgcolor}', curses.color_pair(3))
+    elif selected == 3:
+        stdscr.addstr(9,3,f'HOUR MODE: {hourmode}', curses.A_REVERSE)
 def settings_loop(stdscr):
+    global x,y,z,hourmode,selected,oncolor,offcolor,bgcolor
     stdscr.box()
-    stdscr.addstr(10,10, "Settings")
+    rows, collumns = stdscr.getmaxyx()
+    stdscr.addstr(0,collumns // 2 - len("Settings") // 2, "Settings")
+    update_settings(stdscr)
     while True:
         try:
             key = stdscr.getkey()
@@ -100,7 +141,32 @@ def settings_loop(stdscr):
         if key != None:
             if key == "c":
                 break
-
+            elif key == "KEY_LEFT" and selected == 0:
+                x -= 1
+            elif key == "KEY_RIGHT" and selected == 0:
+                x += 1
+            elif key == "KEY_LEFT" and selected == 1:
+                y -= 1
+            elif key == "KEY_RIGHT" and selected == 1:
+                y += 1
+            elif key == "KEY_LEFT" and selected == 2:
+                z -= 1
+            elif key == "KEY_RIGHT" and selected == 2:
+                z += 1
+            elif (key == "KEY_LEFT" or key == "KEY_RIGHT") and selected == 3:
+                if hourmode == 12:
+                    hourmode = 24
+                else:
+                    hourmode = 12
+            elif key == "KEY_UP" and selected != 0:
+                    selected -= 1
+            elif key == "KEY_DOWN" and selected != 3:
+                    selected += 1
+            oncolor = keys[x % len(keys)]
+            offcolor = keys[y % len(keys)]
+            bgcolor = keys[z % len(keys)]
+            update_settings(stdscr)
+           
 def cleanup_windows():
     global row1, row2
     if 'row1' in globals():
@@ -123,8 +189,8 @@ def cleanup_windows():
 def main(stdscr):
     curses.start_color()
     curses.curs_set(0)
-    curses.init_pair(1,curses.COLOR_YELLOW, curses.COLOR_WHITE)
-    curses.init_pair(2,curses.COLOR_YELLOW, curses.COLOR_MAGENTA)
+    curses.init_pair(1,curses.COLOR_BLACK, color_map[offcolor])
+    curses.init_pair(2,curses.COLOR_BLACK, color_map[oncolor])
     stdscr.nodelay(True)
     stdscr.clear()
     stdscr.refresh()
