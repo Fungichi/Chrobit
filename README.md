@@ -35,3 +35,6 @@ To change this setting you can use the left and right arrow keys.
 To switch to another setting you can use the up and down arrow.
 
 Settings get automatically saved. To see the changes press 'c'
+
+## How to install:
+Under construction
