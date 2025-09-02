@@ -204,15 +204,15 @@ def update_settings(stdscr):
     stdscr.addstr(3,3,f'ON COLOR: {oncolor}',curses.color_pair(2) | curses.A_REVERSE)
     stdscr.addstr(5,3,f'OFF COLOR: {offcolor}',curses.color_pair(1) | curses.A_REVERSE)
     stdscr.addstr(7,3,f'BG COLOR: {bgcolor}',curses.color_pair(4))
-    stdscr.addstr(9,3,f'HOUR MODE: {hourmode}')
+    stdscr.addstr(9,3,f'HOUR MODE: {hourmode}',curses.color_pair(4))
     if selected == 0:
         stdscr.addstr(3,3,f'ON COLOR: {oncolor}',curses.color_pair(2) )
     elif selected == 1:
         stdscr.addstr(5,3,f'OFF COLOR: {offcolor}',curses.color_pair(1))
     elif selected == 2:
-        stdscr.addstr(7,3,f'BG COLOR: {bgcolor}', curses.color_pair(4))
+        stdscr.addstr(7,3,f'BG COLOR: {bgcolor}', curses.color_pair(4) | curses.A_REVERSE)
     elif selected == 3:
-        stdscr.addstr(9,3,f'HOUR MODE: {hourmode}', curses.A_REVERSE)
+        stdscr.addstr(9,3,f'HOUR MODE: {hourmode}', curses.color_pair(4) | curses.A_REVERSE)
 
 def settings_loop(stdscr):
     global x,y,z,hourmode,selected,oncolor,offcolor,bgcolor
