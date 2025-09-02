@@ -20,7 +20,7 @@ keys = list(color_map.keys())
 oncolor = keys[x]
 offcolor = keys[y]
 bgcolor = keys[z]
-hourmode = 24
+hourmode = 12
 selected = 0
 
 class Pixel():
@@ -216,9 +216,11 @@ def update_settings(stdscr):
 
 def settings_loop(stdscr):
     global x,y,z,hourmode,selected,oncolor,offcolor,bgcolor
-    stdscr.box()
+    stdscr.attron(curses.color_pair(4))  
+    stdscr.box()                         
+    stdscr.attroff(curses.color_pair(4)) 
     rows, collumns = stdscr.getmaxyx()
-    stdscr.addstr(0,collumns // 2 - len("Settings") // 2, "Settings")
+    stdscr.addstr(0,collumns // 2 - len("Settings") // 2, "Settings",curses.color_pair(4))
     update_settings(stdscr)
     while True:
         try:
