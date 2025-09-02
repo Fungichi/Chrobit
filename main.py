@@ -15,12 +15,12 @@ color_map = {
         "CYAN": curses.COLOR_CYAN,
         "WHITE": curses.COLOR_WHITE
     }
-x,y,z = 5,7,7
+x,y,z = 5,7,0
 keys = list(color_map.keys())
 oncolor = keys[x]
 offcolor = keys[y]
 bgcolor = keys[z]
-hourmode = 12
+hourmode = 24
 selected = 0
 
 class Pixel():
@@ -31,6 +31,8 @@ class Pixel():
         self.q = q
         self.mode = mode
         self.win = curses.newwin(y,x,s,q)
+        curses.init_pair(3,curses.COLOR_BLACK, color_map[bgcolor])
+        self.win.bkgd(' ', curses.color_pair(3))
     def make_bit(self):
         self.win.clear()
         for i in range(self.y-1):
@@ -40,9 +42,13 @@ class Pixel():
     def moder(self,mode):
         self.mode = mode
         self.make_bit()
+    def change_bg(self):
+        pass
 
-def setup_clock(stdscr):
+def setup_clock12(stdscr):
     stdscr.clear()
+    curses.init_pair(3,curses.COLOR_BLACK, color_map[bgcolor])
+    stdscr.bkgd(' ', curses.color_pair(3))
     stdscr.refresh()
     global row1
     global row2
@@ -56,9 +62,9 @@ def setup_clock(stdscr):
         bit = Pixel(5,10,10,i,2)
         bit.make_bit()
         row2.append(bit)
-    clock_loop(stdscr)
+    clock_loop12(stdscr)
 
-def clock_loop(stdscr):
+def clock_loop12(stdscr):
     try:           
 
         while True:
@@ -95,7 +101,92 @@ def clock_loop(stdscr):
     except Exception as e:
         cleanup_windows()
         raise e
+def setup_clock24(stdscr):
+    stdscr.clear()
+    curses.init_pair(3,curses.COLOR_BLACK, color_map[bgcolor])
+    stdscr.bkgd(' ', curses.color_pair(3))
+    stdscr.refresh()
+    global column1
+    global column2
+    global column3
+    global column4
+    column1 = []
+    column2 = []
+    column3 = []
+    column4 = []
+    for i in range(2,22,5):
+        bit = Pixel(5,10,i,20,1)
+        bit.make_bit()
+        column1.append(bit)
+    for i in range(2,22,5):
+        bit = Pixel(5,10,i,30,1)
+        bit.make_bit()
+        column2.append(bit)
+    for i in range(2,22,5):
+        bit = Pixel(5,10,i,40,1)
+        bit.make_bit()
+        column3.append(bit)
+    for i in range(2,22,5):
+        bit = Pixel(5,10,i,50,1)
+        bit.make_bit()
+        column4.append(bit)
+    clock_loop24(stdscr)
 
+
+def clock_loop24(stdscr):
+    try:
+        while True:
+
+                        
+            def intobit(inti):
+                return format(inti,"4b")
+            digithour = list(map(intobit,map(int,str(datetime.now().hour))))
+            digit1hour = digithour[0]
+            digit2hour = digithour[1]
+            digitminute = list(map(intobit,map(int,str(datetime.now().minute))))
+            digit1minute = digitminute[0]
+            digit2minute = digitminute [1]
+
+            for i,bit in enumerate(digit1hour):
+                if bit == "1":
+                    column1[i].moder(2)
+                else:
+                    column1[i].moder(1)
+
+            for i,bit in enumerate(digit2hour):
+                if bit == "1":
+                    column2[i].moder(2)
+                else:
+                    column2[i].moder(1)
+
+            for i,bit in enumerate(digit1minute):
+                if bit == "1":
+                    column3[i].moder(2)
+                else:
+                    column3[i].moder(1)
+
+            for i,bit in enumerate(digit2minute):
+                if bit == "1":
+                    column4[i].moder(2)
+                else:
+                    column4[i].moder(1)
+            time.sleep(1)  
+
+
+            try:
+                key = stdscr.getkey()
+            except curses.error:
+                key = None
+
+            if key != None:
+                if key == "s":
+                    break
+    
+    except KeyboardInterrupt:
+        cleanup_windows()
+    except Exception as e:
+        cleanup_windows()
+        raise e
 def setup_settings(stdscr):
     cleanup_windows()
     stdscr.clear()
@@ -105,22 +196,24 @@ def update_settings(stdscr):
     curses.init_pair(1,curses.COLOR_BLACK, color_map[offcolor])
     curses.init_pair(2,curses.COLOR_BLACK, color_map[oncolor])
     curses.init_pair(3,curses.COLOR_BLACK, color_map[bgcolor])
+    curses.init_pair(4,curses.COLOR_WHITE,curses.COLOR_BLACK)
     stdscr.addstr(3,3,f'                   ',curses.color_pair(2) | curses.A_REVERSE)
     stdscr.addstr(5,3,f'                   ',curses.color_pair(1) | curses.A_REVERSE)
     stdscr.addstr(7,3,f'                   ')
     stdscr.addstr(9,3,f'                   ')
     stdscr.addstr(3,3,f'ON COLOR: {oncolor}',curses.color_pair(2) | curses.A_REVERSE)
     stdscr.addstr(5,3,f'OFF COLOR: {offcolor}',curses.color_pair(1) | curses.A_REVERSE)
-    stdscr.addstr(7,3,f'BG COLOR: {bgcolor}',curses.color_pair(3) | curses.A_REVERSE)
+    stdscr.addstr(7,3,f'BG COLOR: {bgcolor}',curses.color_pair(4))
     stdscr.addstr(9,3,f'HOUR MODE: {hourmode}')
     if selected == 0:
-        stdscr.addstr(3,3,f'ON COLOR: {oncolor}',curses.color_pair(2))
+        stdscr.addstr(3,3,f'ON COLOR: {oncolor}',curses.color_pair(2) )
     elif selected == 1:
         stdscr.addstr(5,3,f'OFF COLOR: {offcolor}',curses.color_pair(1))
     elif selected == 2:
-        stdscr.addstr(7,3,f'BG COLOR: {bgcolor}', curses.color_pair(3))
+        stdscr.addstr(7,3,f'BG COLOR: {bgcolor}', curses.color_pair(4))
     elif selected == 3:
         stdscr.addstr(9,3,f'HOUR MODE: {hourmode}', curses.A_REVERSE)
+
 def settings_loop(stdscr):
     global x,y,z,hourmode,selected,oncolor,offcolor,bgcolor
     stdscr.box()
@@ -195,7 +288,10 @@ def main(stdscr):
     stdscr.clear()
     stdscr.refresh()
     while True:
-        setup_clock(stdscr)
+        if hourmode == 12:
+            setup_clock12(stdscr)
+        else:
+            setup_clock24(stdscr)
         setup_settings(stdscr)
 
  
