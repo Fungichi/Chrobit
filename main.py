@@ -296,7 +296,8 @@ def main(stdscr):
             setup_clock24(stdscr)
         setup_settings(stdscr)
 
- 
     
-            
-wrapper(main)
+def cli():
+    wrapper(main)
+
+cli()
