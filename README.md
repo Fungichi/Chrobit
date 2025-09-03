@@ -4,7 +4,53 @@
   <img src="https://github.com/Fungichi/Chrobit/blob/main/img/clock12.png" />
 </p>
 
+
+---
+
+## Features
+
+- Binary clock display in terminal
+- 12-hour or 24-hour modes
+- Customizable colors for ON, OFF, and background
+- Real-time updates
+- Interactive settings menu
+
+---
+
+## Prerequisites
+
+Before installing, make sure you have:
+
+- Python 3.6 or higher
+- Terminal that supports `curses` (Linux, macOS, Windows with WSL or compatible terminal)
+
+Install the Python `curses` module:
+
+Linux / macOS (macOs and linux should have curses already installed)
+```bash
+sudo apt install python3-curses
+```
+macOS (Homebrew)
+```bash
+brew install ncurses
+```
+Windows
+```bash
+pip install windows-curses
+```
+
+##Installation
+Clone the repository using `git`
+```bash
+git clone https://github.com/Fungichi/Chrobit.git
+cd Chrobit
+```
+
 ## How to use
+Run the clock using Python:
+```bash
+python main.py
+```
 
 This program has 2 windows:
 - the clock window
@@ -32,9 +78,6 @@ The selected setting is highlighted. (HOUR MODE in the picture)
 
 To change this setting you can use the left and right arrow keys.
 
-To switch to another setting you can use the up and down arrow.
+To switch to another setting you can use the up and down arrow keys.
 
 Settings get automatically saved. To see the changes press 'c'
-
-## How to install:
-Under construction
